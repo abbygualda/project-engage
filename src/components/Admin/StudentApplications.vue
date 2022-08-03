@@ -64,7 +64,10 @@
                             </svg>
                           </td>
                           <td class="text-center">
-                            <v-radio label="Rejected" value="Rejected"></v-radio>
+                            <v-radio
+                              label="Rejected"
+                              value="Rejected"
+                            ></v-radio>
                           </td>
                         </tr>
                       </v-radio-group>
@@ -97,7 +100,7 @@
           </v-card-title>
           <div>
             <v-row>
-              <v-flex mx-1>
+              <v-flex mx-1 style="max-width: 25%">
                 <v-select
                   label="Semester"
                   :value="chosenSemester"
@@ -106,7 +109,7 @@
                   multiple
                 ></v-select>
               </v-flex>
-              <v-flex mx-1>
+              <v-flex mx-1 style="max-width: 25%">
                 <v-select
                   label="Program"
                   :value="chosenProgram"
@@ -115,7 +118,7 @@
                   multiple
                 ></v-select>
               </v-flex>
-              <v-flex mx-1>
+              <v-flex mx-1 style="max-width: 25%">
                 <v-select
                   label="Status"
                   :value="chosenStatus"
@@ -125,6 +128,19 @@
                   multiple
                 ></v-select>
               </v-flex>
+              <v-flex mx-1 style="max-width: 25%">
+                <v-select
+                  label="Position"
+                  :value="chosenPosition"
+                  @input="setChosenPosition"
+                  :items="positionList"
+                  :menu-props="{ maxHeight: '400' }"
+                  :disabled="
+                    chosenProgram.length !== 1 ||
+                      chosenProgram[0] !== 'Employment Opportunities'
+                  "
+                ></v-select>
+              </v-flex>
             </v-row>
           </div>
 
@@ -132,7 +148,7 @@
           <v-data-table
             v-model="selected"
             :headers="headers"
-            :items="applications"
+            :items="filteredApplications"
             item-key="uid"
             show-select
             :single-select="false"
@@ -190,6 +206,29 @@ export default {
     },
     isChosenSemesterEmpty() {
       return this.$store.getters.isChosenSemesterEmpty;
+    },
+    chosenPosition() {
+      return this.$store.state.chosenPosition;
+    },
+    filteredApplications() {
+      if (this.applications) {
+        if (
+          this.chosenProgram.length === 1 &&
+          this.chosenProgram[0] === "Employment Opportunities" &&
+          this.chosenPosition !== "--ALL--"
+        ) {
+          let filteredApplications = this.applications.filter(
+            item =>
+              item.positionInterest &&
+              item.positionInterest.includes(this.chosenPosition)
+          );
+          return filteredApplications;
+        } else {
+          return this.applications;
+        }
+      } else {
+        return [];
+      }
     }
   },
   data() {
@@ -209,10 +248,42 @@ export default {
       selected: null,
       viewStudentApplications: false,
       positionList: [
-        "team lead",
-        "ux designer",
-        "frontend developer",
-        "backend developer"
+        {
+          text: "--ALL--",
+          value: "--ALL--"
+        },
+        {
+          text: "Project Manager",
+          value: "Project Manager"
+        },
+        {
+          text: "Technical Teammate",
+          value: "Technical Teammate"
+        },
+        {
+          text: "UX Design Teammate",
+          value: "UX Design Teammate"
+        },
+        {
+          text: "Special Projects",
+          value: "Special Projects"
+        },
+        {
+          text: "Ambassador",
+          value: "Ambassador"
+        },
+        {
+          text: "Marketing Design",
+          value: "Marketing Design"
+        },
+        {
+          text: "Communications",
+          value: "Communications"
+        },
+        {
+          text: "Events",
+          value: "Events"
+        }
       ],
       position: [],
       programList: [
@@ -316,8 +387,18 @@ export default {
         {
           text: "Notes",
           value: "adminNotes"
-        },
-        {}
+        }
+        // {
+        //   text: "",
+        //   value: "positionInterest",
+        //   filter: value => {
+        //     if (this.chosenProgram !== "Employment Opportunities" || this.chosenPosition.length === 0) return true;
+        //     if (value) {
+        //       let intersection = value.filter(item => this.chosenPosition.includes(item));
+        //       return intersection.length > 0;
+        //     }
+        //   }
+        // }
       ]
     };
   },
@@ -330,6 +411,9 @@ export default {
     },
     setChosenStatus(val) {
       this.$store.commit("setChosenStatus", val);
+    },
+    setChosenPosition(val) {
+      this.$store.commit("setChosenPosition", val);
     },
     back() {
       this.$router.go(-1);

@@ -28,7 +28,8 @@ export default new Vuex.Store({
     type: null,
     chosenSemester: [],
     chosenProgram: [],
-    chosenStatus: []
+    chosenStatus: [],
+    chosenPosition: null
   },
   mutations: {
     setUser: (state, data) => {
@@ -57,6 +58,9 @@ export default new Vuex.Store({
     },
     setChosenStatus(state, data) {
       state.chosenStatus = data;
+    },
+    setChosenPosition(state, data) {
+      state.chosenPosition = data;
     }
   },
   actions: {
