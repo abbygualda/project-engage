@@ -105,7 +105,7 @@
               </v-row>
 
               <v-row class="px-3">
-                <v-flex mx-1>
+                <v-flex mx-1 style="max-width: 25%">
                   <v-select
                     label="Semester"
                     :value="chosenSemester"
@@ -116,7 +116,7 @@
                     class="pt-0 pb-6"
                   ></v-select>
                 </v-flex>
-                <v-flex mx-1>
+                <v-flex mx-1 style="max-width: 25%">
                   <v-select
                     label="Program"
                     :value="chosenProgram"
@@ -127,7 +127,7 @@
                     class="pt-0 pb-6"
                   ></v-select>
                 </v-flex>
-                <v-flex mx-1>
+                <v-flex mx-1 style="max-width: 25%">
                   <v-select
                     label="Status"
                     :value="chosenStatus"
@@ -139,13 +139,27 @@
                     class="pt-0 pb-6"
                   ></v-select>
                 </v-flex>
+                <v-flex mx-1 style="max-width: 25%">
+                  <v-select
+                    label="Position"
+                    :value="chosenPosition"
+                    @input="setChosenPosition"
+                    :items="positionList"
+                    :menu-props="{ maxHeight: '400' }"
+                    :disabled="
+                      chosenProgram.length !== 1 ||
+                        chosenProgram[0] !== 'Employment Opportunities'
+                    "
+                    class="pt-0 pb-6"
+                  ></v-select>
+                </v-flex>
               </v-row>
 
               <!-- Table where all applications are displayed -->
               <v-data-table
                 v-model="selected"
                 :headers="selectedHeaders"
-                :items="applications"
+                :items="filteredApplications"
                 item-key="uid"
                 show-select
                 show-expand
